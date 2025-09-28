@@ -1,83 +1,88 @@
-// Homepage JavaScript
-class HomePage {
-    constructor() {
-        this.postsList = document.getElementById('posts-list');
-        this.init();
-    }
+// Homepage JavaScript 
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Homepage loaded');
+    loadPosts();
+});
 
-    async init() {
-        await this.loadPosts();
-    }
-
-    async loadPosts() {
-        this.postsList.innerHTML = '<div class="loading">Loading posts...</div>';
+async function loadPosts() {
+    const postsList = document.getElementById('posts-list');
+    postsList.innerHTML = '<div class="loading">Loading posts...</div>';
+    
+    try {
+        const response = await fetch('/api/posts');
         
-        try {
-            const response = await fetch('/api/posts');
-            const posts = await response.json();
-            
-            if (!response.ok) throw new Error(posts.error);
-            
-            this.renderPosts(posts);
-        } catch (error) {
-            console.error('Error loading posts:', error);
-            this.postsList.innerHTML = `
-                <div class="empty-state">
-                    <h3>Unable to load posts</h3>
-                    <p>Please try refreshing the page</p>
-                </div>
-            `;
+        if (!response.ok) {
+            throw new Error('Failed to fetch posts');
         }
-    }
-
-    renderPosts(posts) {
-        if (posts.length === 0) {
-            this.postsList.innerHTML = `
-                <div class="empty-state">
-                    <h3>No posts yet</h3>
-                    <p>Be the first to share your thoughts!</p>
-                    <button class="btn-primary" onclick="location.href='/write'" style="margin-top: 1rem;">
-                        Write First Post
-                    </button>
-                </div>
-            `;
-            return;
-        }
-
-        this.postsList.innerHTML = posts.map(post => `
-            <a href="/post/${post.id}" class="post-card">
-                <h3>${this.escapeHtml(post.title)}</h3>
-                <div class="post-preview">${this.getPreview(post.content)}</div>
-                <div class="post-meta">
-                    <span class="post-date">${new Date(post.updatedAt).toLocaleDateString()}</span>
-                    <span>${this.getReadTime(post.content)} min read</span>
-                </div>
-            </a>
-        `).join('');
-    }
-
-    getPreview(content) {
-        // Remove markdown headers and get first 150 characters
-        const plainText = content.replace(/^#+\s+/gm, '').replace(/\n/g, ' ');
-        return this.escapeHtml(plainText.substring(0, 150)) + (plainText.length > 150 ? '...' : '');
-    }
-
-    getReadTime(content) {
-        const words = content.split(/\s+/).length;
-        return Math.ceil(words / 200); // Average reading speed
-    }
-
-    escapeHtml(unsafe) {
-        return unsafe
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+        
+        const posts = await response.json();
+        renderPosts(posts);
+        
+    } catch (error) {
+        console.error('Error loading posts:', error);
+        showError('Failed to load posts. Please try again.');
     }
 }
 
-// Initialize homepage when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    new HomePage();
-});
+function renderPosts(posts) {
+    const postsList = document.getElementById('posts-list');
+    
+    if (!posts || posts.length === 0) {
+        postsList.innerHTML = `
+            <div class="empty-state">
+                <h3>No posts yet</h3>
+                <p>Be the first to share your thoughts!</p>
+                <button class="btn-primary" onclick="location.href='/write'">Write First Post</button>
+            </div>
+        `;
+        return;
+    }
+    
+    postsList.innerHTML = posts.map(post => `
+        <div class="post-card" onclick="viewPost('${post.id}')">
+            <h3>${escapeHtml(post.title)}</h3>
+            <div class="post-preview">${getPreview(post.content)}</div>
+            <div class="post-meta">
+                <span class="post-date">${new Date(post.createdAt).toLocaleDateString()}</span>
+                <span>${getReadTime(post.content)} min read</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function viewPost(postId) {
+    window.location.href = `/post/${postId}`;
+}
+
+function getPreview(content) {
+    if (!content) return 'No content available';
+    const text = content.replace(/#+\s+/g, '').substring(0, 150);
+    return escapeHtml(text) + (content.length > 150 ? '...' : '');
+}
+
+function getReadTime(content) {
+    if (!content) return 0;
+    const words = content.split(/\s+/).length;
+    return Math.max(1, Math.ceil(words / 200));
+}
+
+function showError(message) {
+    const postsList = document.getElementById('posts-list');
+    postsList.innerHTML = `
+        <div class="empty-state">
+            <h3>Error</h3>
+            <p>${message}</p>
+            <button class="btn-primary" onclick="loadPosts()">Try Again</button>
+        </div>
+    `;
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}

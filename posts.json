@@ -1,9 +1,9 @@
 [
   {
-    "id": "1759038119348",
-    "title": "This Is The first post of the site",
-    "content": "###This Post was made to test if the blogging site is working properly###\n##This site supports markup##\nThe page was made for a college naan mudhalvan project",
-    "createdAt": "2025-09-28T05:41:59.348Z",
-    "updatedAt": "2025-09-28T05:41:59.348Z"
+    "id": "1759041809597",
+    "title": "This is the first post of the site",
+    "content": "## This site supports markup\nThis post was made to test the site",
+    "createdAt": "2025-09-28T06:43:29.597Z",
+    "updatedAt": "2025-09-28T06:43:29.597Z"
   }
 ]
