@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Blog - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app homepage">
+        <header>
+            <h1 id="brand">Mini Blog</h1>
+            <p class="subtitle">Share your thoughts with the world</p>
+        </header>
+
+        <main class="home-main">
+            <section class="posts-section">
+                <h2>Recent Posts</h2>
+                <div id="posts-list" class="posts-grid">
+                    <div class="loading">Loading posts...</div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Floating Action Button -->
+        <button id="new-post-fab" class="fab" onclick="location.href='/write'">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+            </svg>
+        </button>
+    </div>
+
+    <script src="home.js"></script>
+</body>
+</html>
