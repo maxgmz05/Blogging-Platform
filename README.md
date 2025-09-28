@@ -15,6 +15,8 @@ A simple and elegant blog application built with Node.js, Express, and vanilla J
 ## Installation
 
 1. Clone the repository:
+
 ```bash
-git clone https://github.com/yourusername/mini-blog.git
-cd mini-blog
+git clone https://github.com/maxgmz05/Blogging-Platform.git
+cd Blogging-Platform
+```
